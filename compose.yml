@@ -1,0 +1,11 @@
+services:
+  mysql-db:
+    image: mysql:8.0
+    container_name: gem-bot_db
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: gem_bot_points
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./db_data:/var/lib/mysql

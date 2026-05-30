@@ -1,0 +1,14 @@
+node_modules
+# Keep environment variables out of version control
+.env
+
+/generated/prisma
+# 💡 DockerのMySQLの実データ（エラーの原因）
+db_data/
+
+# 💡 依存パッケージ（サイズが巨大なためGit管理不要）
+node_modules/
+
+# 💡 コンパイル後のJavaScriptやログなど（必要に応じて）
+dist/
+*.log

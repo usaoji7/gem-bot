@@ -1,0 +1,92 @@
+datasource db {
+  provider  = "mysql"
+
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  guildId   String
+  discordId String
+  points    Int      @default(0)
+  isAdmin   Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([guildId, discordId])
+  @@map("users")
+}
+
+model StoreItem {
+  id          Int      @id @default(autoincrement())
+  guildId     String
+  name        String
+  description String?
+  price       Int
+  roleId      String?  // Optional: The Discord Role ID to assign
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("store_items")
+}
+
+model GuildConfig {
+  id        Int      @id @default(autoincrement())
+  guildId   String   @unique 
+  coinName  String   @default("GEM") 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("guild_configs")
+}
+
+model BonusButton {
+  id        String   @id @default(uuid())
+  guildId   String
+  channelId String
+  minReward Int
+  maxReward Int
+  target    String   // 'self' | 'random'
+  cost      Int      @default(0) // target が 'random' の場合の消費ポイント
+  createdAt DateTime @default(now())
+
+  @@map("bonus_buttons")
+}
+
+model BonusClaim {
+  id        Int      @id @default(autoincrement())
+  guildId   String
+  buttonId  String
+  discordId String
+  claimedAt DateTime @default(now())
+
+  @@map("bonus_claims")
+}
+
+model TicketButton {
+  id         String   @id @default(uuid())
+  guildId    String
+  categoryId String?  // チャンネル作成先のカテゴリID
+  roleIds    String   // カンマ区切りのロールID
+  createdAt  DateTime @default(now())
+
+  tickets    Ticket[]
+
+  @@map("ticket_buttons")
+}
+
+model Ticket {
+  id        String   @id @default(uuid())
+  guildId   String
+  channelId String   @unique
+  discordId String
+  buttonId  String
+  createdAt DateTime @default(now())
+
+  button    TicketButton @relation(fields: [buttonId], references: [id], onDelete: Cascade)
+
+  @@map("tickets")
+}
