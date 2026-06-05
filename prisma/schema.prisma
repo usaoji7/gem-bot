@@ -1,6 +1,5 @@
 datasource db {
-  provider  = "mysql"
-
+  provider = "mysql"
 }
 
 generator client {
@@ -8,13 +7,19 @@ generator client {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  guildId   String
-  discordId String
-  points    Int      @default(0)
-  isAdmin   Boolean  @default(false)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id               Int       @id @default(autoincrement())
+  guildId          String
+  discordId        String
+  points           Int       @default(0)
+  level            Int       @default(1)
+  currentSeasonExp Int       @default(0)
+  totalExp         Int       @default(0)
+  isAdmin          Boolean   @default(false)
+  lastLoginAt      DateTime?
+  streakCount      Int       @default(0)
+  totalLogins      Int       @default(0)
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
 
   @@unique([guildId, discordId])
   @@map("users")
@@ -26,7 +31,7 @@ model StoreItem {
   name        String
   description String?
   price       Int
-  roleId      String?  // Optional: The Discord Role ID to assign
+  roleId      String? // Optional: The Discord Role ID to assign
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -34,11 +39,18 @@ model StoreItem {
 }
 
 model GuildConfig {
-  id        Int      @id @default(autoincrement())
-  guildId   String   @unique 
-  coinName  String   @default("GEM") 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id               Int      @id @default(autoincrement())
+  guildId          String   @unique
+  coinName         String   @default("GEM")
+  logChannelId        String? // エラー通知などを送るモデレーター用チャンネル
+  textExpLimit        Int      @default(5)
+  reactionExpLimit    Int      @default(5)
+  referralLoginCount  Int      @default(3)
+  referralBonusGem    Int      @default(300)
+  referralPassiveRate Float    @default(0.10)
+  referralPassiveDays Int      @default(30)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
 
   @@map("guild_configs")
 }
@@ -49,7 +61,7 @@ model BonusButton {
   channelId String
   minReward Int
   maxReward Int
-  target    String   // 'self' | 'random'
+  target    String // 'self' | 'random'
   cost      Int      @default(0) // target が 'random' の場合の消費ポイント
   createdAt DateTime @default(now())
 
@@ -69,11 +81,11 @@ model BonusClaim {
 model TicketButton {
   id         String   @id @default(uuid())
   guildId    String
-  categoryId String?  // チャンネル作成先のカテゴリID
-  roleIds    String   // カンマ区切りのロールID
+  categoryId String? // チャンネル作成先のカテゴリID
+  roleIds    String // カンマ区切りのロールID
   createdAt  DateTime @default(now())
 
-  tickets    Ticket[]
+  tickets Ticket[]
 
   @@map("ticket_buttons")
 }
@@ -86,7 +98,86 @@ model Ticket {
   buttonId  String
   createdAt DateTime @default(now())
 
-  button    TicketButton @relation(fields: [buttonId], references: [id], onDelete: Cascade)
+  button TicketButton @relation(fields: [buttonId], references: [id], onDelete: Cascade)
 
   @@map("tickets")
 }
+
+model StreakConfig {
+  id         Int      @id @default(autoincrement())
+  guildId    String
+  days       Int
+  bonusGem   Int?
+  roleId     String?
+  multiplier Float? // EXPバフ倍率
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@unique([guildId, days])
+  @@map("streak_configs")
+}
+
+model GuildSeason {
+  id           Int      @id @default(autoincrement())
+  guildId      String
+  seasonNumber Int
+  startedAt    DateTime @default(now())
+  endedAt      DateTime
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@map("guild_seasons")
+}
+
+model GuildRoleMultiplier {
+  id         Int      @id @default(autoincrement())
+  guildId    String
+  roleId     String
+  multiplier Float
+  type       String // 'STREAK' | 'PRIVILEGE'
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@unique([guildId, roleId])
+  @@map("guild_role_multipliers")
+}
+
+model ActionLog {
+  id         Int      @id @default(autoincrement())
+  guildId    String
+  discordId  String
+  actionType String // 'TEXT' | 'REACTION'
+  targetId   String? // 対象メッセージIDなど（重複防止用）
+  createdAt  DateTime @default(now())
+
+  @@index([guildId, discordId, actionType, createdAt])
+  @@map("action_logs")
+}
+
+model Referral {
+  id                 Int       @id @default(autoincrement())
+  guildId            String
+  parentId           String    // 招待した側（親）
+  childId            String    // 招待された側（子）
+  inviteCode         String?
+  loginCount         Int       @default(0)
+  isActive           Boolean   @default(false)
+  passiveEndsAt      DateTime?
+  totalPassiveEarned Int       @default(0)
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  @@unique([guildId, childId])
+  @@map("referrals")
+}
+
+model BotInvite {
+  code      String   @id
+  guildId   String
+  discordId String
+  createdAt DateTime @default(now())
+
+  @@map("bot_invites")
+}
+

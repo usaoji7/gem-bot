@@ -62,7 +62,11 @@ async function handleTicketOpen(interaction: ButtonInteraction, guild: any) {
     }
 
     // チャンネル名の生成
-    const channelName = `ticket-${interaction.user.username.slice(0, 10)}`;
+    const now = new Date();
+    const jstDate = new Date(now.getTime() + 9 * 60 * 60 * 1000);
+    const mm = String(jstDate.getUTCMonth() + 1).padStart(2, '0');
+    const dd = String(jstDate.getUTCDate()).padStart(2, '0');
+    const channelName = `${mm}${dd}_ticket-${interaction.user.username.slice(0, 10)}`;
 
     // ロールIDの配列
     const roleIds = ticketButton.roleIds.split(',').filter((id: string) => id.trim() !== '');

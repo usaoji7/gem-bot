@@ -1,28 +1,35 @@
 import { REST, Routes } from 'discord.js';
 import 'dotenv/config';
+
 import { data as setupData } from './commands/setup.js';
 import { data as balanceData } from './commands/balance.js';
-import { data as giveData } from './commands/give.js';
-import { data as takeData } from './commands/take.js';
-import { data as giveRoleData } from './commands/give-role.js';
-import * as storeAdminData from './commands/store-admin.js';
-import * as storeData from './commands/store.js';
-import * as buyData from './commands/buy.js';
-import * as bonusSetupData from './commands/bonus-setup.js';
-import * as ticketSetupData from './commands/ticket-setup.js';
+import { data as buyData } from './commands/buy.js';
+import { data as storeData } from './commands/store.js';
+import { data as storeAdminData } from './commands/store-admin.js';
+import { data as statusOpenData } from './commands/status-open.js';
+
+// 新しいグループ化されたコマンド
+import { data as managementData } from './commands/management.js';
+import { data as panelData } from './commands/panel.js';
+import { data as configData } from './commands/config.js';
+import { data as streakData } from './commands/streak.js';
+import { data as seasonData } from './commands/season.js';
+import { data as inviteData } from './commands/invite.js';
 
 // 登録するコマンドのデータを配列にまとめる
 const commands = [
     setupData.toJSON(),
     balanceData.toJSON(),
-    giveData.toJSON(),
-    takeData.toJSON(),
-    giveRoleData.toJSON(),
-    storeAdminData.data.toJSON(),
-    storeData.data.toJSON(),
-    buyData.data.toJSON(),
-    bonusSetupData.data.toJSON(),
-    ticketSetupData.data.toJSON(),
+    buyData.toJSON(),
+    storeData.toJSON(),
+    storeAdminData.toJSON(),
+    statusOpenData.toJSON(),
+    managementData.toJSON(),
+    panelData.toJSON(),
+    configData.toJSON(),
+    streakData.toJSON(),
+    seasonData.toJSON(),
+    inviteData.toJSON(),
 ];
 
 const token = process.env.DISCORD_TOKEN;
