@@ -181,3 +181,16 @@ model BotInvite {
   @@map("bot_invites")
 }
 
+model GuildSubscription {
+  guildId              String    @id
+  plan                 String    @default("FREE") // 'FREE', 'TRIAL', 'PREMIUM'
+  purchaseRoute        String?   // 'DISCORD', 'STRIPE'
+  stripeCustomerId     String?
+  stripeSubscriptionId String?
+  trialEndsAt          DateTime?
+  expiresAt            DateTime?
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+
+  @@map("guild_subscriptions")
+}

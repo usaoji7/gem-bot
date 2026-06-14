@@ -43,11 +43,18 @@ export async function execute(interaction: ChatInputCommandInteraction) {
     await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 
     try {
+        const { isPremiumOrTrial } = await import('../services/subscription.js');
+        const hasPremium = await isPremiumOrTrial(guildId);
+
         if (subcommand === 'setup') {
             const days = interaction.options.getInteger('days', true);
             const bonusGem = interaction.options.getInteger('bonus');
             const role = interaction.options.getRole('role');
             const multiplier = interaction.options.getNumber('multiplier');
+
+            if (!hasPremium && (role !== null || multiplier !== null)) {
+                return interaction.editReply({ content: '🌟 **FREEプランでは連続ログインの「コインボーナス」のみ設定可能です。特権ロールやEXPバフの紐付けはプレミアム限定機能です！**' });
+            }
 
             if (bonusGem === null && role === null && multiplier === null) {
                 return interaction.editReply({ content: '❌ `bonus`（GEM）、 `role`（ロール）、または `multiplier`（EXP倍率）のいずれか一つは必ず設定してください。' });
@@ -105,6 +112,9 @@ export async function execute(interaction: ChatInputCommandInteraction) {
             });
 
         } else if (subcommand === 'role-add') {
+            if (!hasPremium) {
+                return interaction.editReply({ content: '🌟 **FREEプランでは特権ロール（常時EXP倍率バフ）機能は利用できません。プレミアムプランへアップグレードしてください！**' });
+            }
             const role = interaction.options.getRole('role', true);
             const multiplier = interaction.options.getNumber('multiplier', true);
 

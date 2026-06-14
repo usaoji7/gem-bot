@@ -1,6 +1,7 @@
 import { Client, GatewayIntentBits, ActivityType, Events, MessageFlags, Collection, Invite, type Interaction } from 'discord.js';
 import { prisma } from './prisma.js';
-import 'dotenv/config';
+import * as dotenv from 'dotenv';
+dotenv.config({ path: '../.env' });
 
 import * as setupCommand from './commands/setup.js';
 import * as balanceCommand from './commands/balance.js';
@@ -15,6 +16,8 @@ import * as configCommand from './commands/config.js';
 import * as streakCommand from './commands/streak.js';
 import * as seasonCommand from './commands/season.js';
 import * as inviteCommand from './commands/invite.js';
+import * as backupCommand from './commands/backup.js';
+import { isPremiumOrTrial, startTrial } from './services/subscription.js';
 
 const client = new Client({
     intents: [
@@ -66,6 +69,21 @@ client.once(Events.ClientReady, async () => {
         }
     }, 60 * 60 * 1000); // 1時間ごと
 });
+
+client.on(Events.GuildCreate, async (guild) => {
+    try {
+        await startTrial(guild.id);
+        console.log(`[Subscription] Trial started for new guild: ${guild.id}`);
+    } catch (err) {
+        console.error(`Failed to start trial for guild ${guild.id}`, err);
+    }
+});
+
+import { handleEntitlementCreate, handleEntitlementUpdate, handleEntitlementDelete } from './events/entitlement.js';
+
+client.on(Events.EntitlementCreate, handleEntitlementCreate);
+client.on(Events.EntitlementUpdate, handleEntitlementUpdate);
+client.on(Events.EntitlementDelete, handleEntitlementDelete);
 
 client.on(Events.InviteCreate, (invite) => {
     if (invite.guild) {
@@ -153,6 +171,10 @@ client.on('messageCreate', async (message) => {
         return;
     }
 
+    if (!(await isPremiumOrTrial(message.guild.id))) {
+        return; // FREEプランはEXP機能ロック
+    }
+
     try {
         const result = await addExp(message.member, 'TEXT');
         if (result.levelUp && 'send' in message.channel) {
@@ -167,6 +189,10 @@ client.on('messageReactionAdd', async (reaction, user) => {
     if (user.bot || !reaction.message.guild) return;
 
     if (reaction.message.author?.id === user.id) return;
+
+    if (!(await isPremiumOrTrial(reaction.message.guild.id))) {
+        return; // FREEプランはEXP機能ロック
+    }
 
     try {
         const member = await reaction.message.guild.members.fetch(user.id);
@@ -185,6 +211,12 @@ client.on('interactionCreate', async (interaction: Interaction) => {
         if (interaction.customId === 'invite_generate') {
             if (!interaction.guild || !interaction.channel) return;
             await interaction.deferReply({ flags: MessageFlags.Ephemeral });
+
+            if (!(await isPremiumOrTrial(interaction.guild.id))) {
+                await interaction.editReply({ content: '🌟 **この機能を利用するにはプレミアムプラン（Stripe / Discord公式）へのアップグレードが必要です。**' });
+                return;
+            }
+
             try {
                 const invite = await interaction.guild.invites.create(interaction.channel.id, {
                     maxAge: 0,
@@ -255,6 +287,8 @@ client.on('interactionCreate', async (interaction: Interaction) => {
             await seasonCommand.execute(interaction);
         } else if (commandName === 'gem-invite') {
             await inviteCommand.execute(interaction);
+        } else if (commandName === 'gem-backup') {
+            await backupCommand.execute(interaction);
         }
     } catch (error) {
         console.error(`コマンド実行エラー (${commandName}):`, error);

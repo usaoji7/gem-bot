@@ -59,6 +59,12 @@ export async function execute(interaction: ChatInputCommandInteraction) {
                 content: `✅ **${targetUser.username}** さんに **${Math.abs(amount)} ${currencyName}** を${actionWord}しました！\n現在の残高: **${userRecord.points} ${currencyName}**`,
             });
         } else if (subcommand === 'give-role') {
+            const { isPremiumOrTrial } = await import('../services/subscription.js');
+            if (!(await isPremiumOrTrial(guildId))) {
+                await interaction.editReply({ content: '🌟 **FREEプランではロール一斉付与機能は利用できません。プレミアムプランへアップグレードしてください！**' });
+                return;
+            }
+
             const role = interaction.options.getRole('role', true);
             const amount = interaction.options.getInteger('amount', true);
 

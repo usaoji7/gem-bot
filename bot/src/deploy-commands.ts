@@ -1,5 +1,6 @@
 import { REST, Routes } from 'discord.js';
-import 'dotenv/config';
+import * as dotenv from 'dotenv';
+dotenv.config({ path: '../.env' });
 
 import { data as setupData } from './commands/setup.js';
 import { data as balanceData } from './commands/balance.js';
@@ -13,8 +14,9 @@ import { data as managementData } from './commands/management.js';
 import { data as panelData } from './commands/panel.js';
 import { data as configData } from './commands/config.js';
 import { data as streakData } from './commands/streak.js';
-import { data as seasonData } from './commands/season.js';
+import * as seasonData from './commands/season.js';
 import { data as inviteData } from './commands/invite.js';
+import { data as backupData } from './commands/backup.js';
 
 // 登録するコマンドのデータを配列にまとめる
 const commands = [
@@ -28,8 +30,9 @@ const commands = [
     panelData.toJSON(),
     configData.toJSON(),
     streakData.toJSON(),
-    seasonData.toJSON(),
+    seasonData.data.toJSON(),
     inviteData.toJSON(),
+    backupData.toJSON(),
 ];
 
 const token = process.env.DISCORD_TOKEN;

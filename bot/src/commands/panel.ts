@@ -1,4 +1,4 @@
-import { SlashCommandBuilder, ChatInputCommandInteraction, PermissionFlagsBits, ActionRowBuilder, ButtonBuilder, ButtonStyle, MessageFlags } from 'discord.js';
+import { SlashCommandBuilder, ChatInputCommandInteraction, PermissionFlagsBits, ActionRowBuilder, ButtonBuilder, ButtonStyle, MessageFlags, ChannelType } from 'discord.js';
 import { prisma } from '../prisma.js';
 
 export const data = new SlashCommandBuilder()
@@ -22,7 +22,7 @@ export const data = new SlashCommandBuilder()
             .addRoleOption(option => option.setName('role1').setDescription('チケットを閲覧できるロール（運営など）').setRequired(true))
             .addRoleOption(option => option.setName('role2').setDescription('追加の閲覧可能ロール').setRequired(false))
             .addRoleOption(option => option.setName('role3').setDescription('追加の閲覧可能ロール').setRequired(false))
-            .addChannelOption(option => option.setName('category').setDescription('チケットを作成するカテゴリ').setRequired(false))
+            .addChannelOption(option => option.setName('category').setDescription('チケットを作成するカテゴリ（カテゴリ内のチャンネルを指定してもOK）').setRequired(false))
             .addStringOption(option => option.setName('title').setDescription('メッセージのタイトル').setRequired(false))
     )
     .addSubcommand(subcommand =>
@@ -43,6 +43,9 @@ export async function execute(interaction: ChatInputCommandInteraction) {
     const subcommand = interaction.options.getSubcommand();
     await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 
+    const { isPremiumOrTrial } = await import('../services/subscription.js');
+    const hasPremium = await isPremiumOrTrial(guildId);
+
     const guildConfig = await prisma.guildConfig.findUnique({
         where: { guildId: guildId },
     });
@@ -58,6 +61,14 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 
             if (min > max) {
                 return interaction.editReply({ content: '❌ `min` は `max` 以下の値にしてください。' });
+            }
+
+            if (!hasPremium) {
+                const existingCount = await prisma.bonusButton.count({ where: { guildId, target } });
+                if (existingCount >= 1) {
+                    await interaction.editReply({ content: `🌟 **FREEプランでは「${target === 'self' ? 'ログインボーナス' : 'ルーレット'}」パネルはサーバー内で1つまでしか設置できません。プレミアムプランへアップグレードしてください！**` });
+                    return;
+                }
             }
 
             const buttonRecord = await prisma.bonusButton.create({
@@ -93,6 +104,10 @@ export async function execute(interaction: ChatInputCommandInteraction) {
             await interaction.editReply({ content: '✅ ボーナスボタンを設置しました！' });
 
         } else if (subcommand === 'ticket') {
+            if (!hasPremium) {
+                await interaction.editReply({ content: '🌟 **FREEプランではチケットツール機能は利用できません。プレミアムプランへアップグレードしてください！**' });
+                return;
+            }
             const role1 = interaction.options.getRole('role1', true);
             const role2 = interaction.options.getRole('role2');
             const role3 = interaction.options.getRole('role3');
@@ -103,16 +118,27 @@ export async function execute(interaction: ChatInputCommandInteraction) {
             if (role2) roles.push(role2.id);
             if (role3) roles.push(role3.id);
 
+            let finalCategoryId = null;
+            if (category) {
+                if (category.type === ChannelType.GuildCategory) {
+                    finalCategoryId = category.id;
+                } else if ('parentId' in category && category.parentId) {
+                    finalCategoryId = category.parentId;
+                } else {
+                    return interaction.editReply({ content: '❌ 指定されたチャンネルはカテゴリに属していません。カテゴリそのものか、カテゴリ内のチャンネルを選択してください。' });
+                }
+            }
+
             const buttonRecord = await prisma.ticketButton.create({
                 data: {
                     guildId,
-                    categoryId: category?.id || null,
+                    categoryId: finalCategoryId,
                     roleIds: roles.join(','),
                 }
             });
 
             const button = new ButtonBuilder()
-                .setCustomId(`ticket_${buttonRecord.id}`)
+                .setCustomId(`ticket_open_${buttonRecord.id}`)
                 .setLabel('チケットを作成')
                 .setEmoji('📩')
                 .setStyle(ButtonStyle.Primary);
@@ -129,6 +155,10 @@ export async function execute(interaction: ChatInputCommandInteraction) {
             await interaction.editReply({ content: '✅ チケット作成ボタンを設置しました！' });
 
         } else if (subcommand === 'invite') {
+            if (!hasPremium) {
+                await interaction.editReply({ content: '🌟 **FREEプランではリファラル（友達招待）機能は利用できません。プレミアムプランへアップグレードしてください！**' });
+                return;
+            }
             const title = interaction.options.getString('title') || '🤝 友達招待（リファラル）リンク発行';
 
             const button = new ButtonBuilder()

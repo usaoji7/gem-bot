@@ -42,7 +42,17 @@ export async function execute(interaction: ChatInputCommandInteraction) {
     await interaction.deferReply({ ephemeral: true });
 
     try {
+        const { isPremiumOrTrial } = await import('../services/subscription.js');
+        const hasPremium = await isPremiumOrTrial(guildId);
+
         if (subcommand === 'add') {
+            if (!hasPremium) {
+                const itemCount = await prisma.storeItem.count({ where: { guildId } });
+                if (itemCount >= 3) {
+                    await interaction.editReply({ content: '🌟 **FREEプランではストアに登録できる商品は最大3個までです。プレミアムプランへアップグレードしてください！**' });
+                    return;
+                }
+            }
             const name = interaction.options.getString('name', true);
             const price = interaction.options.getInteger('price', true);
             const role = interaction.options.getRole('role');

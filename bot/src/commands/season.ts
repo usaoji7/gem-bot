@@ -19,6 +19,12 @@ export async function execute(interaction: ChatInputCommandInteraction) {
         return;
     }
 
+    const { isPremiumOrTrial } = await import('../services/subscription.js');
+    if (!(await isPremiumOrTrial(guildId))) {
+        await interaction.reply({ content: '🌟 **FREEプランではシーズン機能は利用できません。プレミアムプランへアップグレードしてください！**', flags: MessageFlags.Ephemeral });
+        return;
+    }
+
     const subcommand = interaction.options.getSubcommand();
     await interaction.deferReply();
 
