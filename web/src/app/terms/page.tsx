@@ -14,6 +14,11 @@ export default function Terms() {
         {t('terms.intro')}
       </p>
 
+      <div className="doc-section" style={{ background: 'var(--bg-secondary)', borderLeft: '4px solid #ef4444' }}>
+        <h2 style={{ color: '#ef4444' }}>⚠️ {t('terms.beta.title')}</h2>
+        <p style={{ fontWeight: 'bold' }}>{t('terms.beta.desc')}</p>
+      </div>
+
       <div className="doc-section">
         <h2>{t('terms.sec1.title')}</h2>
         <p>{t('terms.sec1.desc1')}</p>

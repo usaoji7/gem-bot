@@ -14,6 +14,7 @@ export default function Navbar() {
       <div className="navbar-links" style={{ alignItems: 'center' }}>
         <Link href="/#features">{t('nav.features')}</Link>
         <Link href="/#pricing">{t('nav.pricing')}</Link>
+        <Link href="/campaign" style={{ color: 'var(--accent-primary)', fontWeight: 'bold' }}>{t('nav.campaign')}</Link>
         <Link href="/commands">{t('nav.commands')}</Link>
         <Link href="/faq">{t('nav.faq')}</Link>
         <Link href="/about">{t('nav.about')}</Link>

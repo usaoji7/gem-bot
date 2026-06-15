@@ -2,9 +2,11 @@ export const dict = {
   ja: {
     'nav.features': '機能',
     'nav.pricing': '料金プラン',
+    'nav.campaign': '🎁 キャンペーン',
     'nav.about': 'About Us',
     'nav.terms': '利用規約',
     'nav.privacy': 'プライバシー',
+    'nav.tokushoho': '特定商取引法に基づく表記',
     'nav.add': 'Discordに追加',
     
     'hero.title1': '独自経済圏の数だけ、',
@@ -100,11 +102,31 @@ export const dict = {
     'about.info.loc': '所在地: 〒000-0000 広島県広島市（※ダミー住所）',
     'about.info.contact': 'お問い合わせ先: サポートDiscordサーバー、またはWEBサイト内お問い合わせフォーム',
 
+    'tokushoho.title': '特定商取引法に基づく表記',
+
+    'campaign.hero.badge': '2026年8月〜2027年1月末 限定',
+    'campaign.hero.title1': '一緒に最高のボットを',
+    'campaign.hero.title2': '創り上げませんか！？',
+    'campaign.hero.subtitle': 'サービスの向上とバグ発見にご協力いただける初期テスターを大・大・大募集！',
+    'campaign.benefits.title': '参加特典がスゴイ！✨',
+    'campaign.benefits.b1': '🎁 オープンベータ期間（6ヶ月間）全プレミアム機能が完全無料！',
+    'campaign.benefits.b2': '🚀 製品版リリース後も、さらに【3ヶ月間無料】でプレミアム版をご招待！',
+    'campaign.conditions.title': '参加条件はたったのこれだけ📝',
+    'campaign.conditions.desc': '「簡単なアンケートの回答」または「短いインタビュー」へのご協力をお願いします。皆さんの生の声が、GEM Botを成長させます！',
+    'campaign.support.title': '🔧 Discordサーバー構築支援もやってます！',
+    'campaign.support.free': '【無料】公式Discordでの基本的なご相談やボットの使い方の質問はいつでも大歓迎！',
+    'campaign.support.paid': '【プロにお任せ】実働の伴う構築代行（ロール設計・チャンネル設定など）は、1回3,000円で承ります！面倒な作業は丸投げOK！',
+    'campaign.support.note': '※ 有償サポートの詳しいお支払い方法等は、公式Discord内で個別にご案内いたします。',
+    'campaign.cta': '今すぐベータテストに参加する！',
+
     'footer.rights': '© {year} GEM Bot. All rights reserved.',
 
     'terms.title': 'GEM Bot 利用規約',
     'terms.updated': '最終更新日: 2026年6月14日',
     'terms.intro': '本利用規約（以下「本規約」といいます）は、GEM Bot開発プロジェクト（以下「当プロジェクト」といいます）が提供するDiscordボット「GEM Bot」および関連するウェブサイト（以下「本サービス」といいます）の利用条件を定めるものです。本サービスの利用者（以下「ユーザー」といいます）は、本規約に同意の上、本サービスを利用するものとします。',
+    
+    'terms.beta.title': '【重要】ベータ版に関する免責事項',
+    'terms.beta.desc': '本サービスは現在ベータテスト期間中です。システムの不具合による不慮のデータの消失、予告のない仕様変更、または機能の停止が発生する可能性があります。当プロジェクトは、本サービスの利用に起因して生じた損害等について、理由の如何に関わらず一切の補償や責任を負いかねます。あらかじめご了承の上、自己責任でご利用ください。',
     
     'terms.sec1.title': '第1条（適用）',
     'terms.sec1.desc1': '本規約は、ユーザーと当プロジェクトとの間の本サービスの利用に関わる一切の関係に適用されます。',
@@ -176,9 +198,11 @@ export const dict = {
   en: {
     'nav.features': 'Features',
     'nav.pricing': 'Pricing',
+    'nav.campaign': '🎁 Campaign',
     'nav.about': 'About Us',
     'nav.terms': 'Terms',
     'nav.privacy': 'Privacy',
+    'nav.tokushoho': 'Legal Notice',
     'nav.add': 'Add to Discord',
     
     'hero.title1': 'More independent economies,',
@@ -274,11 +298,31 @@ export const dict = {
     'about.info.loc': 'Location: Hiroshima, Japan (Dummy)',
     'about.info.contact': 'Contact: Support Discord or Web Form',
 
+    'tokushoho.title': 'Act on Specified Commercial Transactions',
+
+    'campaign.hero.badge': 'Limited: Aug 2026 - Jan 2027',
+    'campaign.hero.title1': 'Let\'s build the best bot',
+    'campaign.hero.title2': 'TOGETHER!',
+    'campaign.hero.subtitle': 'We are looking for early testers to help us improve the service and find bugs!',
+    'campaign.benefits.title': 'Amazing Rewards! ✨',
+    'campaign.benefits.b1': '🎁 All Premium features are completely FREE during the 6-month open beta!',
+    'campaign.benefits.b2': '🚀 PLUS: Get 3 MONTHS of Premium for FREE after the official release!',
+    'campaign.conditions.title': 'Simple Requirements 📝',
+    'campaign.conditions.desc': 'Just help us out by answering a short survey or a brief interview. Your voice will shape the future of GEM Bot!',
+    'campaign.support.title': '🔧 Need help building your server?',
+    'campaign.support.free': '[FREE] Ask any basic questions or consult with us on our official Discord!',
+    'campaign.support.paid': '[Hire a Pro] We offer full hands-on setup service (role design, channel setup, etc.) for just 3,000 JPY / session!',
+    'campaign.support.note': '* Payment details for paid support will be provided individually on our official Discord.',
+    'campaign.cta': 'Join the Beta Test Now!',
+
     'footer.rights': '© {year} GEM Bot. All rights reserved.',
 
     'terms.title': 'GEM Bot Terms of Service',
     'terms.updated': 'Last Updated: June 14, 2026',
     'terms.intro': 'These Terms of Service ("Terms") govern your use of the Discord bot "GEM Bot" and the associated website (collectively, the "Service") provided by the GEM Bot Development Project ("Project", "we", "us"). By inviting the Bot to your Discord server or using its commands, you agree to these Terms.',
+    
+    'terms.beta.title': '[IMPORTANT] Beta Version Disclaimer',
+    'terms.beta.desc': 'This Service is currently in a beta testing phase. There is a possibility of unexpected data loss, unannounced specification changes, or service interruptions due to system bugs. The Project shall not be liable for any damages or losses incurred as a result of using this Service, regardless of the cause. Please use the Service at your own risk.',
     
     'terms.sec1.title': '1. Eligibility and Agreement',
     'terms.sec1.desc1': 'By using the Service, you represent that you agree to these Terms and comply with Discord\'s Terms of Service and Developer Policy.',

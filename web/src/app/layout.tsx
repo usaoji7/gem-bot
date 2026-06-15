@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 import { LanguageProvider } from '../context/LanguageContext';
 import Navbar from '../components/Navbar';
+import Footer from '../components/Footer';
 
 export const metadata: Metadata = {
   title: 'GEM Bot - The Ultimate Guild Economy System',
@@ -23,9 +24,7 @@ export default function RootLayout({
             {children}
           </main>
 
-          <footer className="footer">
-            <p className="footer-text">© {new Date().getFullYear()} GEM Bot. All rights reserved.</p>
-          </footer>
+          <Footer />
         </LanguageProvider>
       </body>
     </html>

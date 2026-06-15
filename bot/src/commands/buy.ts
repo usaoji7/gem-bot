@@ -19,7 +19,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
     }
 
     const itemId = interaction.options.getInteger('item_id', true);
-    await interaction.deferReply();
+    await interaction.deferReply({ flags: 64 }); // 64 is MessageFlags.Ephemeral
 
     try {
         const guildConfig = await prisma.guildConfig.findUnique({
@@ -57,7 +57,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
         // ロールの付与処理（商品にロールが設定されている場合）
         if (item.roleId) {
             if (!interaction.guild) throw new Error('Guild not found');
-            const member = await interaction.guild.members.fetch(interaction.user.id);
+            const member = await interaction.guild.members.fetch({ user: interaction.user.id, force: true });
 
             // 既にロールを持っている場合は購入不可にする
             if (member.roles.cache.has(item.roleId)) {

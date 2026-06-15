@@ -72,6 +72,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
         }
     } catch (error) {
         console.error('Season command error:', error);
-        await interaction.editReply({ content: '❌ コマンドの実行中にエラーが発生しました。' });
+        await interaction.deleteReply().catch(() => {});
+        await interaction.followUp({ content: '❌ コマンドの実行中にエラーが発生しました。', flags: MessageFlags.Ephemeral });
     }
 }
